@@ -1,0 +1,99 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tb="http://www.hardcodet.net/taskbar"
+                    xmlns:dh="clr-namespace:Runnr.Helpers"
+                    xmlns:local="clr-namespace:Runnr">
+    <!-- The taskbar context menu - the first row is a dummy to show off simple data binding -->
+    <!--
+        The "shared" directive is needed if we reopen the sample window a few times - WPF will otherwise
+        reuse the same context menu (which is a resource) again (which will have its DataContext set to the old TaskbarIcon)
+  -->
+    <ContextMenu x:Shared="false" x:Key="SysTrayMenu">
+        <!--<MenuItem Header="Show Window" Command="{Binding ShowWindowCommand}" />
+        <MenuItem Header="Hide Window" Command="{Binding HideWindowCommand}" />-->
+        <MenuItem Header="Add New Application" Command="{Binding AddNewApplicationCommand}" />
+        <Separator />
+        <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />
+    </ContextMenu>
+
+
+    <!-- the application's NotifyIcon - started from App.xaml.cs. Declares its own view model. -->
+    <tb:TaskbarIcon x:Key="NotifyIcon" 
+                    IconSource="Images/Computers.ico" 
+                    ToolTipText="Double-click for window, right-click for menu"
+                    DoubleClickCommand="{Binding ShowWindowCommand}"
+                    ContextMenu="{StaticResource SysTrayMenu}">
+
+        <!-- self-assign a data context (could also be done programmatically) -->
+        <tb:TaskbarIcon.DataContext>
+            <local:RunnrViewModel />
+        </tb:TaskbarIcon.DataContext>
+
+        <tb:TaskbarIcon.TrayPopup>
+            <Border
+                    Background="Black"
+                    BorderBrush="Black"
+                   
+                    CornerRadius="4"
+                    MinHeight="300"
+                    Width="500">
+                <TabControl TabStripPlacement="Bottom">
+                    <TabItem Header="Application">
+                        <StackPanel>
+                            <DataGrid ItemsSource="{Binding Applications}" AutoGenerateColumns="False" MinHeight="300" 
+                              SelectedItem="{Binding SelectedApplication}" CanUserAddRows="False" SelectionUnit="FullRow"
+                              dh:DatagridCommand.DataGridDoubleClickCommand="{Binding LaunchSelectedApplicationCommand}" >
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="App Name" Binding="{Binding Name}" Width="100" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Path" Binding="{Binding ApplicationPath}" Width="200" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Parameters" Binding="{Binding Parameters}" Width="100" IsReadOnly="True"/>
+                                    <DataGridTemplateColumn Header="Delete">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button 
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                                Path=DataContext.DeleteSelectedApplicationCommand}" >
+                                                    <Image Source="Images\delete1.png" Height="20" Width="20"></Image>
+                                                </Button>
+
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="To Do | Notes">
+                        <!--ToDo List-->
+                        <StackPanel>
+                            <TextBox Margin="3" Text="{Binding NewNote.NoteText,UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <ListBox  ItemsSource="{Binding Notes}" SelectedItem="{Binding SelectedNote}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Path=NoteText}"/>
+                                            <Button 
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBox}},
+                                                Path=DataContext.DeleteSelectedNoteCommand}"  CommandParameter="{Binding }">
+                                                <Image Source="Images\delete1.png" Height="20" Width="20"></Image>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+
+                            </ListBox>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+
+            </Border>
+        </tb:TaskbarIcon.TrayPopup>
+    </tb:TaskbarIcon>
+
+
+</ResourceDictionary>

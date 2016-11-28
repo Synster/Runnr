@@ -83,6 +83,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\ControlDoubleClick.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="ViewModels\AddApplicationViewModel.cs" />
     <Compile Include="Model\ApplicationDetail.cs" />

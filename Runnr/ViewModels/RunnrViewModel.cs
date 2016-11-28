@@ -28,6 +28,12 @@ namespace Runnr
             AddNewApplicationCommand = new DelegateCommand(CanAddNewApplication, OnAddNewApplication);
             DeleteSelectedApplicationCommand = new DelegateCommand(CanDeleteApplication, OnDelete);
             DeleteSelectedNoteCommand = new DelegateCommand(OnDeleteNote);
+            CopyNoteCommand = new DelegateCommand(OnCopyNote);
+        }
+
+        private void OnCopyNote(object notUsed)
+        {
+            Clipboard.SetText(SelectedNote.NoteText);
         }
 
         private void InitializeNotes()
@@ -174,7 +180,7 @@ namespace Runnr
         public ICommand EnterKeyCommand { get; set; }
 
         public ICommand AddNewApplicationCommand { get; set; }
-
+        public ICommand CopyNoteCommand { get; set; }
         public ICommand DeleteSelectedNoteCommand { get; set; }
         public ICommand DeleteSelectedApplicationCommand { get; set; }
 
@@ -192,7 +198,8 @@ namespace Runnr
                     CommandAction = (x) =>
                     {
                         Application.Current.MainWindow = new AddNewApplicationWindow();
-                        Application.Current.MainWindow.Show();
+                        Application.Current.MainWindow.DataContext = new AddApplicationViewModel(this);
+                        Application.Current.MainWindow.ShowDialog();
                     }
                 };
             }

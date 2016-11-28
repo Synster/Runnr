@@ -20,7 +20,7 @@
     <!-- the application's NotifyIcon - started from App.xaml.cs. Declares its own view model. -->
     <tb:TaskbarIcon x:Key="NotifyIcon" 
                     IconSource="Images/Computers.ico" 
-                    ToolTipText="Double-click for window, right-click for menu"
+                    ToolTipText="Double-click for window, right-click for menu" 
                     DoubleClickCommand="{Binding ShowWindowCommand}"
                     ContextMenu="{StaticResource SysTrayMenu}">
 
@@ -73,6 +73,13 @@
                                 </TextBox.InputBindings>
                             </TextBox>
                             <ListBox  ItemsSource="{Binding Notes}" SelectedItem="{Binding SelectedNote}">
+                                <ListBox.ItemContainerStyle>
+                                    <Style>
+                                        <Setter Property="dh:ControlDoubleClick.Command" Value="{Binding DataContext.CopyNoteCommand,
+                                    RelativeSource={RelativeSource FindAncestor, 
+                                    AncestorType={x:Type ListBox}}}"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
